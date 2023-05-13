@@ -166,33 +166,31 @@ def mostrarPrimitiva():
 def comprobarPrimitiva():
 
     lista_columna_acertados = []
-    
-    nums_primi_acertados.clear()
-    
+     
     for i,columna in enumerate(nums_primi_jugados):
        
-        for j,num in enumerate(columna.split(",")):
+        for num in columna.split(","):
 
-            if num == primitiva_nums.getNums(7)[j]:
+            if num in primitiva_nums.getNums(7):
                 
                 lista_columna_acertados.append(num)
         
-        print(nums_primi_acertados)
-        lista_columna_acertados.clear()
-
+        nums_primi_acertados.append(lista_columna_acertados)
         time.sleep(2)
         lcd.clear()
         lcd.home()
 
-        lcd.message(" Columna %d prim:\n %d aciertos." %(i,len(nums_primi_acertados)))
+        lcd.message(" Columna %d prim:\n %d aciertos." %(i,len(nums_primi_acertados[i])))
          
+        lista_columna_acertados.clear()
 
-        time.sleep(5)
+    time.sleep(5)
 
 
     print(nums_primi_jugados)
+    print(nums_primi_acertados) 
+    nums_primi_acertados.clear()
 
-    nums_primi_acertados.append(lista_columna_acertados)
     
 def comprobarReintegro():
 
