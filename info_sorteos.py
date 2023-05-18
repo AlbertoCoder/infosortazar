@@ -57,8 +57,6 @@ euromillo_estr = rascado.Dato(URL_SORTEOS_EUROMILLONES,'li','estrella')
 
 global nums_euromi_jugados
 
-fecha_primi = rascado.Dato("https://lawebdelaprimitiva.com/Primitiva.html",'time','published')
-fecha_eurom = rascado.Dato("https://lawebdelaprimitiva.com/Euromillones.html",'time','published')
 
 interrogapertura = [
 
@@ -166,39 +164,53 @@ def mostrarPrimitiva():
 def comprobarPrimitiva():
 
     lista_columna_acertados = []
+
+    singular_plural = "aciertos"
      
     for i,columna in enumerate(nums_primi_jugados):
        
-        for num in columna.split(","):
+        for j,num in enumerate(columna.split(",")):
 
-            if num in primitiva_nums.getNums(7):
-                
+            if num in primitiva_nums.getNums(7) and j<6:
+             
                 lista_columna_acertados.append(num)
         
         nums_primi_acertados.append(lista_columna_acertados)
+        
         time.sleep(2)
         lcd.clear()
         lcd.home()
 
-        lcd.message(" Columna %d prim:\n %d aciertos." %(i,len(nums_primi_acertados[i])))
+        if(len(lista_columna_acertados)==1):
+
+            singular_plural = "acierto"
+        
+        else:
+
+            singular_plural = "aciertos"
+
+        lcd.message(" Columna %d prim:\n %d %s." %(i+1,len(nums_primi_acertados[i]),singular_plural))
+        time.sleep(3)        
+        print(lista_columna_acertados)
          
         lista_columna_acertados.clear()
 
     time.sleep(5)
 
-
+    nums_primi_acertados.clear()
     print(nums_primi_jugados)
     print(nums_primi_acertados) 
-    nums_primi_acertados.clear()
-
     
 def comprobarReintegro():
 
-    if nums_primi_jugados[6] == primitiva_reint.getNums(1)[0]:
-        
+    print("Números: %s" %(nums_primi_jugados))
+    print("Reintegro: %s" %primitiva_reint.getNums(1)[0])
+    if nums_primi_jugados[0].split(",")[6] == primitiva_reint.getNums(1)[0]:
+       
+        print("Has acertado el reintegro.")
         lcd.clear()
-        lcd.message("   ¡REINTEGRO   \n    ACERTADO!   ")
-        time.sleep(5)
+        lcd.message("   REINTEGRO    \n    ACERTADO     ")
+        time.sleep(10)
         lcd.clear()
         lcd.home()
 
@@ -248,7 +260,7 @@ def informar_nuevo_sorteo(juego,retardo):
         lcd.message("   HA SALIDO\n  %s" %juego)
         time.sleep(retardo)
         lcd.clear()
-        time.sleep(retardo)
+        time.sleep(retardo/2)
 
 
 #-----------------------------FUNCIÓN PRINCIPAL------------------------------------------------------------#
@@ -256,28 +268,34 @@ def informar_nuevo_sorteo(juego,retardo):
 
 
 def main():
-
+    
     lcd.show_cursor(False)
     lcd.create_char(0, interrogapertura)
     mostrar_menu_opc()
 
     while True:
         
+        fecha_primi = rascado.Dato("https://lawebdelaprimitiva.com/Primitiva.html",'time','published')
+        fecha_eurom = rascado.Dato("https://lawebdelaprimitiva.com/Euromillones.html",'time','published')
+        
         lcd.home()
         hoy = datetime.today()
         time.sleep(1) #Aquí hago una suspensión de 1 segundo para dar tiempo a la asignación de variable.
         hoy_formateado = hoy.strftime("%d")
         time.sleep(1) #Aquí hago una suspensión de 1 segundo para dar tiempo a la asignación de variable.
-    
+        
+        print(hoy)
+        print(fecha_primi.getFecha())
+
 
         if(int(fecha_primi.getFecha().split(" ")[1])==int(hoy_formateado)):
 
-            informar_nuevo_sorteo("LA PRIMITIVA",0.2)
+            informar_nuevo_sorteo("LA PRIMITIVA",0.5)
             print("¡Ha salido un nuevo sorteo de La Primitiva!") 
         
         if(int(fecha_eurom.getFecha().split(" ")[1])==int(hoy_formateado)):
 
-            informar_nuevo_sorteo("EUROMILLONES",0.48)
+            informar_nuevo_sorteo("EUROMILLONES",0.5)
             print("¡Ha salido un nuevo sorteo de Euromillones!") 
 
         lcd.message("Sorteo Primitiva\n    %s %s" %(fecha_primi.getFecha().split(" ")[0],fecha_primi.getFecha().split(" ")[1]))
@@ -307,24 +325,23 @@ def main():
         mostrarJoker()
         
         time.sleep(10)
-        
-        
- 
+         
         comprobarPrimitiva()
         
+        time.sleep(5)
+      
+        comprobarReintegro()
+       
+        time.sleep(10)
 
         lcd.clear()
-      
-        #comprobarReintegro()
-
 
         lcd.message("  Euromillones  \n    %s %s" %(fecha_eurom.getFecha().split(" ")[0],fecha_eurom.getFecha().split(" ")[1]))
+        
         time.sleep(3)
         
         lcd.clear()
      
-
-
         mostrarEuromillones()
         
         print("-------------------\n") 
@@ -336,15 +353,15 @@ def main():
                                           euromillo_nums.getNums(5)[4],
                                           euromillo_estr.getNums(2)[0],
                                           euromillo_estr.getNums(2)[1]))
-        
         time.sleep(15)
 
         lcd.clear()
-
-
+        
         os.system('clear')
-        imprime_mens("EXTRACTOR DE INFORMACIÓN DE SORTEOS DEL ESTADO.\n\tAlberto Álvarez Portero")
-        imprime_mens("---------------------------------------------\n")
+        
+        imprime_mens("----------------------------------------------------------\n")
+        imprime_mens("EXTRACTOR DE INFORMACIÓN DE LOTERÍAS Y APUESTAS DEL ESTADO.\n\t\tAlberto Álvarez Portero")
+        imprime_mens("----------------------------------------------------------\n")
 
 main()        
 #GPIO.cleanup()
