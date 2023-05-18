@@ -332,7 +332,7 @@ def main():
       
         comprobarReintegro()
        
-        time.sleep(10)
+        time.sleep(2)
 
         lcd.clear()
 
